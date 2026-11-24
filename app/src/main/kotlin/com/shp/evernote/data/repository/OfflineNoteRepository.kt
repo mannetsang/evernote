@@ -18,8 +18,8 @@ class OfflineNoteRepository @Inject constructor(
     private val dao: NoteDao,
     private val photoStore: PhotoStore,
     private val auth: AuthProvider,
-    private val clock: Clock = Clock.System,
-    private val ids: IdGenerator = IdGenerator.Random,
+    private val clock: Clock,
+    private val ids: IdGenerator,
 ) : NoteRepository {
 
     override fun observeNotes(): Flow<List<Note>> =

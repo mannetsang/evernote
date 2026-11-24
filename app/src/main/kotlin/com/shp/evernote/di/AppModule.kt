@@ -8,6 +8,8 @@ import com.shp.evernote.data.files.FilePhotoStore
 import com.shp.evernote.data.files.PhotoStore
 import com.shp.evernote.data.local.AppDatabase
 import com.shp.evernote.data.local.NoteDao
+import com.shp.evernote.data.repository.Clock
+import com.shp.evernote.data.repository.IdGenerator
 import com.shp.evernote.data.repository.NoteRepository
 import com.shp.evernote.data.repository.OfflineNoteRepository
 import dagger.Binds
@@ -39,6 +41,12 @@ object AppModule {
     @Provides
     @Singleton
     fun authProvider(): AuthProvider = LocalOnlyAuthProvider()
+
+    @Provides
+    fun clock(): Clock = Clock.System
+
+    @Provides
+    fun idGenerator(): IdGenerator = IdGenerator.Random
 }
 
 @Module
