@@ -69,8 +69,17 @@ class FilePhotoStore @Inject constructor(
         } finally {
             tmp.delete()
         }
+        finalBitmap.recycle()
+        discardIfTemporary(source)
         StoredPhoto(fileName = fileName, width = finalBitmap.width, height = finalBitmap.height)
-            .also { finalBitmap.recycle() }
+    }
+
+    /** Camera captures land in the cache directory; once imported they are waste. */
+    private fun discardIfTemporary(source: Uri) {
+        if (source.scheme != "file") return
+        val path = source.path ?: return
+        val file = File(path)
+        if (file.canonicalPath.startsWith(context.cacheDir.canonicalPath)) file.delete()
     }
 
     override suspend fun delete(fileName: String) {

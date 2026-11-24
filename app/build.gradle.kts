@@ -101,6 +101,13 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
 
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.view)
+    implementation(libs.coil.compose)
+    implementation(libs.androidx.compose.runtime.livedata)
+
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.exifinterface)
     implementation(libs.kotlinx.coroutines.android)
