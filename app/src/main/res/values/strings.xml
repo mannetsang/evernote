@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Evernote</string>
+    <string name="home_title">Evernote</string>
+    <string name="home_empty">No notes yet. Tap + to create one.</string>
+</resources>
