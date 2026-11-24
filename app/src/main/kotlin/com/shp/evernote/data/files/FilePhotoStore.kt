@@ -18,8 +18,8 @@ import javax.inject.Singleton
 
 @Singleton
 class FilePhotoStore @Inject constructor(
-    @ApplicationContext private val context: Context,
-    @IoDispatcher private val io: CoroutineDispatcher,
+    @param:ApplicationContext private val context: Context,
+    @param:IoDispatcher private val io: CoroutineDispatcher,
 ) : PhotoStore {
 
     private val dir: File
