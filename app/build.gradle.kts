@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -18,6 +20,26 @@ android {
         versionName = "0.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        // One stable debug key across machines and CI runs, so a new debug
+        // APK installs over the previous one instead of failing with
+        // INSTALL_FAILED_UPDATE_INCOMPATIBLE. The keystore is not in the
+        // repository: CI decodes it from the DEBUG_KEYSTORE_BASE64 secret
+        // into the path given by DEBUG_KEYSTORE; locally, set
+        // debug.keystore=/path/to/debug.keystore in local.properties. When
+        // neither is present, the SDK's default debug key is used.
+        val keystorePath = System.getenv("DEBUG_KEYSTORE")
+            ?: localProperty("debug.keystore")
+        if (keystorePath != null && file(keystorePath).exists()) {
+            getByName("debug") {
+                storeFile = file(keystorePath)
+                storePassword = "android"
+                keyAlias = "androiddebugkey"
+                keyPassword = "android"
+            }
+        }
     }
 
     buildTypes {
@@ -67,6 +89,13 @@ android {
         // release ships; dependency updates are a deliberate change instead.
         disable += listOf("NewerVersionAvailable", "GradleDependency", "AndroidGradlePluginVersion")
     }
+}
+
+/** Reads a key from local.properties, or null when the file or key is absent. */
+fun localProperty(key: String): String? {
+    val file = rootProject.file("local.properties")
+    if (!file.exists()) return null
+    return Properties().apply { file.inputStream().use { load(it) } }.getProperty(key)
 }
 
 ksp {
