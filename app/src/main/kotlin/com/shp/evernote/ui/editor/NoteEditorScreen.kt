@@ -80,6 +80,7 @@ fun NoteEditorRoute(
     NoteEditorScreen(
         state = state,
         fileFor = viewModel::fileFor,
+        onTitleChange = viewModel::onTitleChange,
         onTextChange = viewModel::onTextChange,
         onPickFromGallery = {
             picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
@@ -98,6 +99,7 @@ fun NoteEditorRoute(
 fun NoteEditorScreen(
     state: NoteEditorUiState,
     fileFor: (String) -> File,
+    onTitleChange: (String) -> Unit,
     onTextChange: (String) -> Unit,
     onPickFromGallery: () -> Unit,
     onOpenCamera: () -> Unit,
@@ -155,6 +157,17 @@ fun NoteEditorScreen(
                     Text(stringResource(R.string.action_gallery), modifier = Modifier.padding(start = 8.dp))
                 }
             }
+
+            OutlinedTextField(
+                value = state.title,
+                onValueChange = onTitleChange,
+                enabled = state.loaded && !state.saving,
+                label = { Text(stringResource(R.string.editor_title_label)) },
+                singleLine = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+            )
 
             OutlinedTextField(
                 value = state.text,

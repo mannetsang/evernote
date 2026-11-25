@@ -30,7 +30,7 @@ class OfflineNoteRepository @Inject constructor(
 
     override suspend fun getNote(id: String): Note? = dao.getNote(id)?.toDomain()
 
-    override suspend fun saveNote(id: String?, text: String, photos: List<PhotoInput>): Note {
+    override suspend fun saveNote(id: String?, title: String, text: String, photos: List<PhotoInput>): Note {
         val now = clock.now()
         val existing = id?.let { dao.getNote(it) }
         val noteId = existing?.note?.id ?: id ?: ids.next()
@@ -68,6 +68,7 @@ class OfflineNoteRepository @Inject constructor(
 
         val entity = NoteEntity(
             id = noteId,
+            title = title,
             text = text,
             createdAt = existing?.note?.createdAt ?: now,
             updatedAt = now,

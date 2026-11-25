@@ -37,8 +37,9 @@ class OfflineNoteRepositoryTest {
 
     @Test
     fun `creating a note imports photos in order and stamps owner and times`() = runTest {
-        val note = repo.saveNote(null, "hello", listOf(PhotoInput.New(uri(1)), PhotoInput.New(uri(2))))
+        val note = repo.saveNote(null, "hello", "hello", listOf(PhotoInput.New(uri(1)), PhotoInput.New(uri(2))))
 
+        assertEquals("hello", note.title)
         assertEquals("hello", note.text)
         assertEquals("user-1", note.ownerId)
         assertEquals(1_000L, note.createdAt)
@@ -52,17 +53,19 @@ class OfflineNoteRepositoryTest {
 
     @Test
     fun `editing keeps createdAt, bumps updatedAt, reorders and drops photos`() = runTest {
-        val created = repo.saveNote(null, "a", listOf(PhotoInput.New(uri(1)), PhotoInput.New(uri(2)), PhotoInput.New(uri(3))))
+        val created = repo.saveNote(null, "a", "a", listOf(PhotoInput.New(uri(1)), PhotoInput.New(uri(2)), PhotoInput.New(uri(3))))
         val (p0, p1, p2) = created.photos
 
         clock.now = 2_000L
         val edited = repo.saveNote(
             created.id,
+            "B",
             "b",
             listOf(PhotoInput.Existing(p2.id), PhotoInput.New(uri(4)), PhotoInput.Existing(p0.id)),
         )
 
         assertEquals(created.id, edited.id)
+        assertEquals("B", edited.title)
         assertEquals("b", edited.text)
         assertEquals(1_000L, edited.createdAt)
         assertEquals(2_000L, edited.updatedAt)
@@ -75,13 +78,14 @@ class OfflineNoteRepositoryTest {
 
     @Test
     fun `a failed import leaves the database untouched and cleans up imported files`() = runTest {
-        val created = repo.saveNote(null, "a", listOf(PhotoInput.New(uri(1))))
+        val created = repo.saveNote(null, "a", "a", listOf(PhotoInput.New(uri(1))))
 
         // Imports so far: 1. The next save imports two new photos; the second fails.
         store.failOnImport = 3
         try {
             repo.saveNote(
                 created.id,
+                "changed",
                 "changed",
                 listOf(PhotoInput.Existing(created.photos[0].id), PhotoInput.New(uri(2)), PhotoInput.New(uri(3))),
             )
@@ -101,7 +105,7 @@ class OfflineNoteRepositoryTest {
 
     @Test
     fun `deleting hides the note, removes photos and files, and the list updates`() = runTest {
-        val note = repo.saveNote(null, "x", listOf(PhotoInput.New(uri(1))))
+        val note = repo.saveNote(null, "x", "x", listOf(PhotoInput.New(uri(1))))
 
         repo.observeNotes().test {
             assertEquals(1, awaitItem().size)
@@ -118,10 +122,10 @@ class OfflineNoteRepositoryTest {
 
     @Test
     fun `referencing a photo from another note is rejected`() = runTest {
-        val a = repo.saveNote(null, "a", listOf(PhotoInput.New(uri(1))))
-        val b = repo.saveNote(null, "b", emptyList())
+        val a = repo.saveNote(null, "a", "a", listOf(PhotoInput.New(uri(1))))
+        val b = repo.saveNote(null, "b", "b", emptyList())
         try {
-            repo.saveNote(b.id, "b", listOf(PhotoInput.Existing(a.photos[0].id)))
+            repo.saveNote(b.id, "b", "b", listOf(PhotoInput.Existing(a.photos[0].id)))
             fail("expected rejection")
         } catch (e: IllegalArgumentException) {
             // expected

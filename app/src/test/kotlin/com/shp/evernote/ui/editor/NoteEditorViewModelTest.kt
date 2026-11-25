@@ -62,6 +62,10 @@ class NoteEditorViewModelTest {
         vm.onTextChange("  ")
         assertFalse(vm.uiState.value.canSave)
 
+        vm.onTitleChange("Shelf A")
+        assertTrue(vm.uiState.value.canSave)
+
+        vm.onTitleChange("")
         vm.addPhotos(listOf(uri(1)))
         assertTrue(vm.uiState.value.canSave)
     }
@@ -88,14 +92,16 @@ class NoteEditorViewModelTest {
 
     @Test
     fun `editing loads the note and saving writes the new order`() = runTest(dispatcher) {
-        val note = repo.saveNote(null, "orig", listOf(PhotoInput.New(uri(1)), PhotoInput.New(uri(2))))
+        val note = repo.saveNote(null, "Orig title", "orig", listOf(PhotoInput.New(uri(1)), PhotoInput.New(uri(2))))
         val vm = viewModel(note.id)
         advanceUntilIdle()
 
         assertFalse(vm.uiState.value.isNew)
+        assertEquals("Orig title", vm.uiState.value.title)
         assertEquals("orig", vm.uiState.value.text)
         assertEquals(2, vm.uiState.value.photos.size)
 
+        vm.onTitleChange("New title")
         vm.onTextChange("changed")
         vm.movePhoto(1, 0)
         vm.addPhotos(listOf(uri(3)))
@@ -106,7 +112,8 @@ class NoteEditorViewModelTest {
         assertEquals(note.id, savedId)
         val saved = repo.getNote(note.id)
         assertNotNull(saved)
-        assertEquals("changed", saved!!.text)
+        assertEquals("New title", saved!!.title)
+        assertEquals("changed", saved.text)
         assertEquals(listOf(note.photos[1].id, note.photos[0].id), saved.photos.take(2).map { it.id })
         assertEquals(3, saved.photos.size)
     }

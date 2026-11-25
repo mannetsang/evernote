@@ -2,7 +2,7 @@
     <string name="app_name">Evernote</string>
     <string name="home_title">Evernote</string>
     <string name="home_empty">No notes yet. Tap + to create one.</string>
-    <string name="note_untitled">(No text)</string>
+    <string name="note_untitled">Untitled note</string>
     <plurals name="photo_count">
         <item quantity="one">%d photo</item>
         <item quantity="other">%d photos</item>
@@ -11,7 +11,8 @@
     <string name="detail_title">Note</string>
     <string name="editor_title_new">New note</string>
     <string name="editor_title_edit">Edit note</string>
-    <string name="editor_text_label">Text</string>
+    <string name="editor_title_label">Title</string>
+    <string name="editor_text_label">Notes</string>
     <string name="editor_no_photos">No photos yet. Add some from the camera or your gallery.</string>
     <string name="editor_error_title">Could not save</string>
 

@@ -125,11 +125,20 @@ private fun NoteCard(note: Note, fileFor: (String) -> File, onClick: () -> Unit)
             }
             Column(modifier = Modifier.padding(start = 12.dp).fillMaxWidth()) {
                 Text(
-                    text = note.text.ifBlank { stringResource(R.string.note_untitled) },
-                    style = MaterialTheme.typography.bodyLarge,
-                    maxLines = 2,
+                    text = note.title.ifBlank { stringResource(R.string.note_untitled) },
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
+                if (note.text.isNotBlank()) {
+                    Text(
+                        text = note.text,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
                 Text(
                     text = buildString {
                         append(DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(Date(note.updatedAt)))
