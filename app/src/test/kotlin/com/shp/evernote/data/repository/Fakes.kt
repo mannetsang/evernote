@@ -59,8 +59,11 @@ class FakePhotoStore : PhotoStore {
         return StoredPhoto(name, 1600, 1200)
     }
 
+    val discarded = ArrayList<Uri>()
+
     override fun fileFor(fileName: String): File = File("/fake/$fileName")
     override suspend fun delete(fileName: String) { files -= fileName }
+    override suspend fun discardIfTemporary(source: Uri) { discarded += source }
 }
 
 class FakeAuth(private val id: String? = "user-1") : AuthProvider {
