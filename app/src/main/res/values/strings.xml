@@ -3,6 +3,8 @@
     <string name="home_title">Evernote</string>
     <string name="home_empty">No notes yet. Tap + to create one.</string>
     <string name="note_untitled">Untitled note</string>
+    <string name="search_hint">Search notes</string>
+    <string name="search_no_matches">No notes match your search.</string>
     <plurals name="photo_count">
         <item quantity="one">%d photo</item>
         <item quantity="other">%d photos</item>
@@ -24,6 +26,8 @@
     <string name="action_new_note">New note</string>
     <string name="action_back">Back</string>
     <string name="action_edit">Edit</string>
+    <string name="action_share">Share</string>
+    <string name="action_clear_search">Clear search</string>
     <string name="action_delete">Delete</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_save">Save</string>
