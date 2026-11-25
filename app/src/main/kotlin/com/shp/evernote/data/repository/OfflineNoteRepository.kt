@@ -80,6 +80,10 @@ class OfflineNoteRepository @Inject constructor(
         val kept = entities.map { it.id }.toSet()
         existingPhotos.values.filter { it.id !in kept }.forEach { photoStore.delete(it.fileName) }
 
+        // The save is durable, so temporary captures are no longer needed.
+        // Done last on purpose: if the save had failed, a retry could still read them.
+        photos.filterIsInstance<PhotoInput.New>().forEach { photoStore.discardIfTemporary(it.source) }
+
         return checkNotNull(dao.getNote(noteId)).toDomain()
     }
 

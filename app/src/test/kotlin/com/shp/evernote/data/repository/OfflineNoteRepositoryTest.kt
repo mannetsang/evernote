@@ -46,6 +46,8 @@ class OfflineNoteRepositoryTest {
         assertEquals(listOf(0, 1), note.photos.map { it.position })
         assertEquals(listOf("p0.jpg", "p1.jpg"), note.photos.map { it.fileName })
         assertEquals(setOf("p0.jpg", "p1.jpg"), store.files)
+        // Temporary sources are released only once the save is durable.
+        assertEquals(listOf(uri(1), uri(2)), store.discarded)
     }
 
     @Test
@@ -93,6 +95,8 @@ class OfflineNoteRepositoryTest {
         assertEquals("a", after!!.text)
         assertEquals(1, after.photos.size)
         assertEquals(setOf("p0.jpg"), store.files)
+        // Nothing from the failed save was discarded, so a retry can still read it.
+        assertEquals(listOf(uri(1)), store.discarded)
     }
 
     @Test

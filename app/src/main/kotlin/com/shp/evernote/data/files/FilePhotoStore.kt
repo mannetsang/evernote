@@ -12,6 +12,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException
+import java.io.InputStream
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -30,19 +31,20 @@ class FilePhotoStore @Inject constructor(
     override suspend fun import(source: Uri): StoredPhoto = withContext(io) {
         val resolver = context.contentResolver
 
+        // Pass 1: dimensions only. decodeStream returns null here by design.
         val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-        resolver.openInputStream(source)?.use { BitmapFactory.decodeStream(it, null, bounds) }
-            ?: throw IOException("Cannot open $source")
+        open(source).use { BitmapFactory.decodeStream(it, null, bounds) }
         if (bounds.outWidth <= 0 || bounds.outHeight <= 0) throw IOException("Not an image: $source")
 
+        // Pass 2: decode at a power-of-two sample so memory stays bounded.
         val decodeOptions = BitmapFactory.Options().apply {
             inSampleSize = sampleSizeFor(bounds.outWidth, bounds.outHeight, PhotoStore.MAX_EDGE_PX)
             inPreferredConfig = Bitmap.Config.ARGB_8888
         }
-        val sampled = resolver.openInputStream(source)?.use { BitmapFactory.decodeStream(it, null, decodeOptions) }
+        val sampled = open(source).use { BitmapFactory.decodeStream(it, null, decodeOptions) }
             ?: throw IOException("Cannot decode $source")
 
-        val rotation = resolver.openInputStream(source)?.use { exifRotation(ExifInterface(it)) } ?: 0
+        val rotation = open(source).use { exifRotation(ExifInterface(it)) }
         val scale = scaleFor(sampled.width, sampled.height, PhotoStore.MAX_EDGE_PX)
 
         val matrix = Matrix().apply {
@@ -69,17 +71,21 @@ class FilePhotoStore @Inject constructor(
         } finally {
             tmp.delete()
         }
+        val result = StoredPhoto(fileName = fileName, width = finalBitmap.width, height = finalBitmap.height)
         finalBitmap.recycle()
-        discardIfTemporary(source)
-        StoredPhoto(fileName = fileName, width = finalBitmap.width, height = finalBitmap.height)
+        result
     }
 
-    /** Camera captures land in the cache directory; once imported they are waste. */
-    private fun discardIfTemporary(source: Uri) {
+    private fun open(source: Uri): InputStream =
+        context.contentResolver.openInputStream(source) ?: throw IOException("Cannot open $source")
+
+    override suspend fun discardIfTemporary(source: Uri) {
         if (source.scheme != "file") return
         val path = source.path ?: return
-        val file = File(path)
-        if (file.canonicalPath.startsWith(context.cacheDir.canonicalPath)) file.delete()
+        withContext(io) {
+            val file = File(path)
+            if (file.canonicalPath.startsWith(context.cacheDir.canonicalPath)) file.delete()
+        }
     }
 
     override suspend fun delete(fileName: String) {

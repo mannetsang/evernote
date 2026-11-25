@@ -22,6 +22,13 @@ interface PhotoStore {
 
     suspend fun delete(fileName: String)
 
+    /**
+     * Deletes [source] if it is a temporary file this app made (a camera
+     * capture in the cache directory). Call it once a save has succeeded;
+     * nothing else is ever deleted.
+     */
+    suspend fun discardIfTemporary(source: Uri)
+
     companion object {
         const val MAX_EDGE_PX = 1600
         const val JPEG_QUALITY = 85
