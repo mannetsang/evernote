@@ -1,0 +1,8 @@
+<resources>
+    <!-- Compose draws the real theme; this only styles the window before
+         the first frame. -->
+    <style name="Theme.Evernote" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>
