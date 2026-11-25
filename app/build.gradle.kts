@@ -131,6 +131,7 @@ dependencies {
     ksp(libs.androidx.room.compiler)
 
     implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.exifinterface)
     implementation(libs.kotlinx.coroutines.android)
 
     testImplementation(libs.junit)
