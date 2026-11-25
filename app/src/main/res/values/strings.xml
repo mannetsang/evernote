@@ -2,4 +2,36 @@
     <string name="app_name">Evernote</string>
     <string name="home_title">Evernote</string>
     <string name="home_empty">No notes yet. Tap + to create one.</string>
+    <string name="note_untitled">(No text)</string>
+    <plurals name="photo_count">
+        <item quantity="one">%d photo</item>
+        <item quantity="other">%d photos</item>
+    </plurals>
+
+    <string name="detail_title">Note</string>
+    <string name="editor_title_new">New note</string>
+    <string name="editor_title_edit">Edit note</string>
+    <string name="editor_text_label">Text</string>
+    <string name="editor_no_photos">No photos yet. Add some from the camera or your gallery.</string>
+    <string name="editor_error_title">Could not save</string>
+
+    <string name="delete_title">Delete this note?</string>
+    <string name="delete_message">The note and its photos will be removed from this device.</string>
+
+    <string name="camera_permission_needed">Evernote needs the camera to take photos for a note. You can still add photos from the gallery.</string>
+
+    <string name="action_new_note">New note</string>
+    <string name="action_back">Back</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_save">Save</string>
+    <string name="action_ok">OK</string>
+    <string name="action_camera">Camera</string>
+    <string name="action_gallery">Gallery</string>
+    <string name="action_take_photo">Take photo</string>
+    <string name="action_remove_photo">Remove photo</string>
+    <string name="action_move_earlier">Move earlier</string>
+    <string name="action_move_later">Move later</string>
+    <string name="action_try_again">Try again</string>
 </resources>
