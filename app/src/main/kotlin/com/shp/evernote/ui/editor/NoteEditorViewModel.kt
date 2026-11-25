@@ -30,13 +30,14 @@ sealed interface DraftPhoto {
 
 data class NoteEditorUiState(
     val isNew: Boolean = true,
+    val title: String = "",
     val text: String = "",
     val photos: List<DraftPhoto> = emptyList(),
     val loaded: Boolean = false,
     val saving: Boolean = false,
     val error: String? = null,
 ) {
-    val canSave: Boolean get() = loaded && !saving && (text.isNotBlank() || photos.isNotEmpty())
+    val canSave: Boolean get() = loaded && !saving && (title.isNotBlank() || text.isNotBlank() || photos.isNotEmpty())
 }
 
 @HiltViewModel
@@ -56,6 +57,7 @@ class NoteEditorViewModel @Inject constructor(
             val note = noteId?.let { repository.getNote(it) }
             _uiState.update {
                 it.copy(
+                    title = note?.title ?: "",
                     text = note?.text ?: "",
                     photos = note?.photos.orEmpty().map { p -> DraftPhoto.Existing(p) },
                     loaded = true,
@@ -65,6 +67,8 @@ class NoteEditorViewModel @Inject constructor(
     }
 
     fun fileFor(fileName: String): File = photoStore.fileFor(fileName)
+
+    fun onTitleChange(title: String) = _uiState.update { it.copy(title = title) }
 
     fun onTextChange(text: String) = _uiState.update { it.copy(text = text) }
 
@@ -100,7 +104,7 @@ class NoteEditorViewModel @Inject constructor(
                         is DraftPhoto.New -> PhotoInput.New(it.source)
                     }
                 }
-                val saved = repository.saveNote(noteId, s.text.trim(), inputs)
+                val saved = repository.saveNote(noteId, s.title.trim(), s.text.trim(), inputs)
                 onSaved(saved.id)
             } catch (t: Exception) {
                 _uiState.update { it.copy(saving = false, error = t.message ?: t.javaClass.simpleName) }

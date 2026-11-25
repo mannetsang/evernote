@@ -6,13 +6,14 @@ package com.shp.evernote.domain.model
  */
 data class Note(
     val id: String,
+    val title: String,
     val text: String,
     val photos: List<Photo>,
     val createdAt: Long,
     val updatedAt: Long,
     val ownerId: String?,
 ) {
-    val isEmpty: Boolean get() = text.isBlank() && photos.isEmpty()
+    val isEmpty: Boolean get() = title.isBlank() && text.isBlank() && photos.isEmpty()
 }
 
 data class Photo(

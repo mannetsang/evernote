@@ -13,6 +13,8 @@ import com.shp.evernote.domain.model.Photo
 @Entity(tableName = "notes")
 data class NoteEntity(
     @PrimaryKey val id: String,
+    /** Added in schema v2; older rows get an empty title. */
+    @ColumnInfo(defaultValue = "") val title: String = "",
     val text: String,
     @ColumnInfo(name = "created_at") val createdAt: Long,
     @ColumnInfo(name = "updated_at") val updatedAt: Long,
@@ -51,6 +53,7 @@ data class NoteWithPhotos(
 
 fun NoteWithPhotos.toDomain(): Note = Note(
     id = note.id,
+    title = note.title,
     text = note.text,
     photos = photos.sortedBy { it.position }.map { it.toDomain() },
     createdAt = note.createdAt,

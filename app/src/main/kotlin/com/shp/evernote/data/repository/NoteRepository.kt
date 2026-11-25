@@ -28,7 +28,7 @@ interface NoteRepository {
      * list in display order: photos of the note that are absent from it are
      * removed, and new ones are imported and compressed.
      */
-    suspend fun saveNote(id: String?, text: String, photos: List<PhotoInput>): Note
+    suspend fun saveNote(id: String?, title: String, text: String, photos: List<PhotoInput>): Note
 
     suspend fun deleteNote(id: String)
 }
